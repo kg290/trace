@@ -8,7 +8,7 @@ import { adversarialApp } from '../tests/fixtures.js';
 
 const started = performance.now(), source = process.cwd(), root = await fs.mkdtemp(path.join(await fs.realpath(os.tmpdir()), 'trace-packed-'));
 const npm = process.env.npm_execpath; assert(npm, 'Run through npm run pack:smoke.');
-const cache = path.resolve(process.env.npm_config_cache || '../.npm-cache'), installation = path.join(root, 'installation'), project = path.join(root, 'project'), store = path.join(root, 'incidents');
+const installation = path.join(root, 'installation'), project = path.join(root, 'project'), store = path.join(root, 'incidents');
 async function command(args: string[], expectedCode = 0) {
   const result = await new Promise<{ code: number | null; stdout: string; stderr: string }>((resolve, reject) => {
     const child = spawn(process.execPath, args, { cwd: source, env: process.env, windowsHide: true, shell: false });
@@ -18,6 +18,8 @@ async function command(args: string[], expectedCode = 0) {
   assert.equal(result.code, expectedCode, result.stderr + result.stdout); return result.stdout;
 }
 await command([npm, 'run', 'build']);
+// The offline install below needs the cache that npm ci filled: npm's own cache unless npm_config_cache overrides it.
+const cache = path.resolve(process.env.npm_config_cache || (await command([npm, 'config', 'get', 'cache'])).trim());
 const packed = JSON.parse(await command([npm, 'pack', '--ignore-scripts', '--json', '--pack-destination', root]))[0];
 const tarball = path.join(root, packed.filename);
 await command([npm, 'install', '--prefix', installation, tarball, '--omit=dev', '--ignore-scripts', '--offline', '--no-audit', '--no-fund', '--cache', cache]);
