@@ -1,0 +1,41 @@
+{
+  "name": "trace",
+  "version": "0.3.0",
+  "description": "Your agent builds it. TRACE checks it. Exercises web apps, APIs, CLIs and libraries, collects screenshots and evidence, and proves that fixes work.",
+  "author": {
+    "name": "TRACE contributors"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/kg290/Trace",
+  "repository": "https://github.com/kg290/Trace",
+  "keywords": [
+    "testing",
+    "verification",
+    "qa",
+    "debugging",
+    "screenshots",
+    "evidence"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
+  "interface": {
+    "displayName": "TRACE",
+    "shortDescription": "Checks what your agent built and proves the fix",
+    "longDescription": "TRACE runs your web app, API, CLI or library, collects screenshots and other evidence, reports compact findings, and re-runs the same frozen checks after a fix. A pass only counts as a verified fix when the same check failed first. No API keys, no telemetry.",
+    "developerName": "TRACE contributors",
+    "category": "Coding",
+    "capabilities": [
+      "Instructions",
+      "Lifecycle hooks"
+    ],
+    "defaultPrompt": [
+      "Check this project with TRACE.",
+      "Check the feature you just built.",
+      "Verify this fix with TRACE."
+    ],
+    "brandColor": "#7C3AED",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png",
+    "websiteURL": "https://github.com/kg290/Trace"
+  }
+}

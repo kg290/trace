@@ -1,0 +1,65 @@
+{
+  "name": "trace-local-experiment",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Automated local checks and evidence for your existing coding agent. Experimental; TRACE is provisional.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.23.3 <23 || >=24 <25"
+  },
+  "bin": {
+    "trace-local": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "skills",
+    ".claude-plugin",
+    ".codex-plugin",
+    "hooks",
+    "assets",
+    "install.mjs",
+    "install.d.mts",
+    "README.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "docs/*.md",
+    "docs/*.json",
+    "docs/assets"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "tsc --noEmit",
+    "docs:check": "node scripts/docs-check.mjs",
+    "test": "node --import tsx --test --test-concurrency=1 tests/*.test.ts",
+    "test:browser": "node --import tsx --test --test-concurrency=1 tests/*.browser.ts",
+    "test:independent": "node --import tsx scripts/independent.ts",
+    "demo": "node --import tsx examples/profile/server.ts",
+    "demo:proof": "node --import tsx scripts/demo-proof.ts",
+    "measure": "node --import tsx scripts/measure.ts",
+    "pack:smoke": "node --import tsx scripts/pack-smoke.ts",
+    "start": "node dist/cli.js",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "playwright": "1.65.1",
+    "@playwright/test": "1.65.1"
+  },
+  "devDependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "vite": "8.3.8",
+    "typescript": "7.0.2",
+    "tsx": "4.23.15",
+    "@types/node": "22.19.15",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kg290/Trace.git"
+  },
+  "homepage": "https://github.com/kg290/Trace#readme"
+}

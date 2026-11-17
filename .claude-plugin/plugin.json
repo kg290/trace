@@ -1,0 +1,31 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "trace",
+  "displayName": "TRACE",
+  "version": "0.3.0",
+  "description": "Your agent builds it. TRACE checks it. Exercises web apps, APIs, CLIs and libraries, collects screenshots and evidence, and proves that fixes work. Type /trace.",
+  "author": {
+    "name": "TRACE contributors"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/kg290/Trace",
+  "repository": "https://github.com/kg290/Trace",
+  "keywords": [
+    "testing",
+    "verification",
+    "qa",
+    "debugging",
+    "screenshots",
+    "playwright",
+    "evidence"
+  ],
+  "icon": "./assets/logo.png",
+  "userConfig": {
+    "auto_check": {
+      "type": "boolean",
+      "title": "Automatic checks",
+      "description": "At the end of a task that changed code (git projects), ask the agent for one TRACE check of that change. Never mid-task, never twice in a row.",
+      "default": true
+    }
+  }
+}

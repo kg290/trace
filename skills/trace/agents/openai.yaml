@@ -1,0 +1,4 @@
+interface:
+  display_name: "TRACE"
+  short_description: "Your agent builds it. TRACE checks it."
+  default_prompt: "Use $trace to automatically check the current project and recent changes."

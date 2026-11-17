@@ -1,0 +1,17 @@
+{
+  "description": "TRACE automatic checks: at the end of a task that changed code, ask for one TRACE check of that change.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"import(require('url').pathToFileURL(require('path').join(process.env.CLAUDE_PLUGIN_ROOT, 'skills', 'trace', 'auto-check.mjs')).href)\"",
+            "timeout": 30,
+            "statusMessage": "TRACE: checking whether this task changed code..."
+          }
+        ]
+      }
+    ]
+  }
+}

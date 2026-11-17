@@ -1,0 +1,13 @@
+{
+  "scope": "Seeded local profile integration; native host browser tools only",
+  "basis": "examples/profile/profile.spec.ts and examples/profile/server.ts",
+  "initial": "Alex Rivera",
+  "input": "Mira Chen",
+  "actions": ["Fill Display name", "Click Save profile", "Reload the page"],
+  "checks": [
+    {"id":"persist-ui", "expected":"After reload, Display name is Mira Chen"},
+    {"id":"persist-api", "expected":"GET /api/profile returns displayName Mira Chen"},
+    {"id":"validation", "expected":"Authenticated PATCH with empty displayName returns 422 and does not alter saved state"},
+    {"id":"authorization", "expected":"Unauthenticated PATCH returns 403 and does not alter saved state"}
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "trace",
+  "description": "TRACE: automatic checking, evidence and fix verification for your coding agent.",
+  "owner": {
+    "name": "TRACE contributors"
+  },
+  "plugins": [
+    {
+      "name": "trace",
+      "description": "Your agent builds it. TRACE checks it.",
+      "source": "./",
+      "category": "development"
+    }
+  ]
+}

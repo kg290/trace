@@ -1,0 +1,14 @@
+node_modules/
+dist/
+web-dist/
+.serena/
+.cache/
+.test-output/
+.agents/skills/
+.claude/
+docs/evidence/
+releases/
+.trace*/
+*.tgz
+.env*
+*.tsbuildinfo

@@ -1,0 +1,18 @@
+# ⚙️ Optional local helper
+
+Read `runtime.json` next to SKILL.md and run `node <cli> <command> --project <current-project>`. Without `runtime.json` (plugin installs), use `trace-local <command>` if it is on PATH; the helper keeps evidence in a private per-user folder outside the project (override with `--store` or `TRACE_HOME` only when needed). Set `PLAYWRIGHT_BROWSERS_PATH` from `browserPath` when present. A null CLI means the helper was not built; use host tools or explain the missing fallback.
+
+For local web checks:
+
+1. Use the task's app URL, or `discover`. Discovery reads only the selected project and a single project-derived Vite port; it does not scan. Start the project's normal local server when authorized.
+2. `inspect --url <app> --share-with-current-agent` captures an initial image, a control inventory and layout measurements (element boxes, controls cut off at the viewport edge, horizontal page overflow). Open the returned approved images with the host's image tool. Inspection alone is not a behavioral pass; a measurement is not a defect without a requirement.
+3. Write a bounded JSON flow: `schema: 1`, `expected`, `testData` (true only for synthetic inputs), `actions`. Actions have an `event` label, `action` (`fill/click/check/select/press/reload`), and `locator` (`by: label/role/testId/id`, `value`, optional `role`). Inputs include `value`. A save may specify `awaitResponse: {method, url}` and `waitFor: <locator>`.
+4. `run --url <app> --file <flow.json> --share-with-current-agent --allow-local-side-effects` executes only the specifically authorized local interactions, taking a screenshot after each step and returning final layout measurements. A failed step is named in `omissions` with its reason. Read the incident and targeted evidence as needed: `incident <id>`, `evidence <id> --after 0 --limit 25`.
+5. Before editing, write an oracle with `schema: 1`, exact `origin`, `prerequisites` and `checks`. Visible assertions are `{kind: "value"|"text", phase: "after actions"|"after reload", locator, equals}`. Negative HTTP checks are `{kind: "http", method, path, body, status, authentication: "session"|"none"}`. Verify replays the flow exactly as written. When the oracle has `after reload` checks, a trailing `reload` in the flow is skipped so `after actions` checks see the state before reloading. HTTP checks run last.
+6. `oracle <id> --file <oracle.json>` freezes criteria. Retain the returned SHA. Run `verify <id> --url <origin> --oracle-sha <sha> --allow-local-side-effects` on the baseline **before** the fix, then again after it. Do not replace the frozen oracle.
+
+Verify statuses: the first run is the baseline, either **reproduced** or **could not reproduce**. Later runs report **verified within stated checks** only after a reproduced baseline; otherwise **still failing**, **regression** or **could not reproduce**. **blocked** means the scenario could not run, or a check failed while outside requests were blocked. Each failed check carries `observed` (what was actually seen). Each run saves a masked final `screenshot`, for before/after evidence. `history` holds the run count and the time since the baseline.
+
+The helper uses fresh Chromium, blocks outside-origin HTTP/WebSockets and service workers during automatic capture/verification, and masks known private regions. It does not sandbox backend egress or remove all private pixels. Arbitrary frames, canvas, uploads, drag/drop and native UI are unsupported. Headers, cookies, storage and browser request/response bodies are not retained.
+
+Nonvisual plan details: [checks.md](checks.md). Native host tools remain preferred when sufficient. These helper commands are internal agent operations, never homework for the user.

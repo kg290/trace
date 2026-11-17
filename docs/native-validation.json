@@ -1,0 +1,78 @@
+{
+  "date": "2026-11-17",
+  "integration": "Existing host Chrome DevTools MCP",
+  "scenario": "Save Mira Chen and reload; inspect persisted state and expected rejections",
+  "contractSources": [
+    "examples/profile/profile.spec.ts",
+    "examples/profile/server.ts"
+  ],
+  "seeded": true,
+  "helperBrowserUsed": false,
+  "limitations": [
+    "Known broken fixture switched to existing working implementation.",
+    "Discovery probes did not start model turns.",
+    "Not a blind bug-finding or productivity benchmark."
+  ],
+  "before": {
+    "criteriaSha": "2fd34d418c4e2fd96895a100df1c2ed684216f74d98e59ef2e0fc962ff5716a4",
+    "checks": [
+      {
+        "id": "persist-ui",
+        "expected": "Mira Chen",
+        "observed": "Alex Rivera",
+        "passed": false
+      },
+      {
+        "id": "persist-api",
+        "expected": "Mira Chen",
+        "observed": "Alex Rivera",
+        "passed": false
+      },
+      {
+        "id": "validation",
+        "expected": 422,
+        "observed": 422,
+        "statePreserved": true,
+        "passed": true
+      },
+      {
+        "id": "authorization",
+        "expected": 403,
+        "observed": 403,
+        "statePreserved": true,
+        "passed": true
+      }
+    ]
+  },
+  "after": {
+    "criteriaSha": "2fd34d418c4e2fd96895a100df1c2ed684216f74d98e59ef2e0fc962ff5716a4",
+    "checks": [
+      {
+        "id": "persist-ui",
+        "expected": "Mira Chen",
+        "observed": "Mira Chen",
+        "passed": true
+      },
+      {
+        "id": "persist-api",
+        "expected": "Mira Chen",
+        "observed": "Mira Chen",
+        "passed": true
+      },
+      {
+        "id": "validation",
+        "expected": 422,
+        "observed": 422,
+        "statePreserved": true,
+        "passed": true
+      },
+      {
+        "id": "authorization",
+        "expected": 403,
+        "observed": 403,
+        "statePreserved": true,
+        "passed": true
+      }
+    ]
+  }
+}
