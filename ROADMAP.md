@@ -10,7 +10,7 @@ What's next for TRACE.
 
 ## Now
 
-**Qualify the Codex plugin end to end.** Install from `kg290/Trace` with `codex plugin marketplace add`, trust the hook, run a bare `$trace:trace` on the demo, and record the result. Until then the Codex plugin is checked against its schema only.
+**Qualify the Codex plugin end to end.** Install from `kg290/trace` with `codex plugin marketplace add`, trust the hook, run a bare `$trace:trace` on the demo, and record the result. Until then the Codex plugin is checked against its schema only.
 
 **Ship the helper inside the plugin.** Plugin users install the helper by hand today. Next: start it lazily, so HTTP, CLI and library checks work with zero dependencies, and offer the Playwright browser as an opt-in download.
 
@@ -36,4 +36,4 @@ What's next for TRACE.
 
 ---
 
-Have an idea or a use case? [Open an issue](https://github.com/kg290/Trace/issues).
+Have an idea or a use case? [Open an issue](https://github.com/kg290/trace/issues).

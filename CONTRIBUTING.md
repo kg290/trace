@@ -8,7 +8,7 @@ TRACE has one rule that shapes every change: **check real behavior against a kno
 
 ## Wrong findings are bugs
 
-If TRACE called something a defect that isn't, missed one, or claimed a fix it never saw fail, [open an issue](https://github.com/kg290/Trace/issues/new?template=bug_report.md). Include the expectation TRACE used and where the real one comes from. A sanitized finding is enough, and no video is needed.
+If TRACE called something a defect that isn't, missed one, or claimed a fix it never saw fail, [open an issue](https://github.com/kg290/trace/issues/new?template=bug_report.md). Include the expectation TRACE used and where the real one comes from. A sanitized finding is enough, and no video is needed.
 
 ## Changes to the skill need a before and after
 

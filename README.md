@@ -12,10 +12,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/kg290/Trace/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/kg290/Trace/ci.yml?branch=main&style=flat-square&label=ci&color=111827" alt="CI"></a>
-  <a href="https://github.com/kg290/Trace/releases/latest"><img src="https://img.shields.io/github/v/release/kg290/Trace?style=flat-square&color=111827&label=release" alt="Latest release"></a>
+  <a href="https://github.com/kg290/trace/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/kg290/trace/ci.yml?branch=main&style=flat-square&label=ci&color=111827" alt="CI"></a>
+  <a href="https://github.com/kg290/trace/releases/latest"><img src="https://img.shields.io/github/v/release/kg290/trace?style=flat-square&color=111827&label=release" alt="Latest release"></a>
   <a href="#install"><img src="https://img.shields.io/badge/plugin-Claude%20Code%20%C2%B7%20Codex-111827?style=flat-square" alt="Plugin for Claude Code and Codex"></a>
-  <a href="https://github.com/kg290/Trace/stargazers"><img src="https://img.shields.io/github/stars/kg290/Trace?style=flat-square&color=111827&label=stars" alt="Stars"></a>
+  <a href="https://github.com/kg290/trace/stargazers"><img src="https://img.shields.io/github/stars/kg290/trace?style=flat-square&color=111827&label=stars" alt="Stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-111827?style=flat-square" alt="MIT license"></a>
 </p>
 
@@ -51,7 +51,7 @@ TRACE does that part. Type `/trace` and it picks what to check from your request
 **Claude Code**, as two separate prompts:
 
 ```
-/plugin marketplace add kg290/Trace
+/plugin marketplace add kg290/trace
 ```
 ```
 /plugin install trace@trace
@@ -60,7 +60,7 @@ TRACE does that part. Type `/trace` and it picks what to check from your request
 **Codex:**
 
 ```bash
-codex plugin marketplace add kg290/Trace
+codex plugin marketplace add kg290/trace
 codex plugin add trace@trace
 ```
 
@@ -68,7 +68,7 @@ Then open `/hooks` in Codex, trust TRACE's Stop hook, and start a new thread.
 
 **Any other agent**, or a single project without a plugin: `node install.mjs --project <path>` from a clone. Step by step, including the optional local helper: **[INSTALL.md](INSTALL.md)**.
 
-Only install TRACE from [`kg290/Trace`](https://github.com/kg290/Trace) on GitHub.
+Only install TRACE from [`kg290/trace`](https://github.com/kg290/trace) on GitHub.
 
 ## Use it
 

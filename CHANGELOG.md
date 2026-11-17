@@ -11,8 +11,8 @@ All notable changes to TRACE. The format follows [Keep a Changelog](https://keep
 **A plugin for Claude Code and Codex, and proof that a fix worked, not just a pass.**
 
 ### Added
-- **Claude Code plugin** (`.claude-plugin/`) with its own marketplace: `/plugin marketplace add kg290/Trace`. Includes the skill, automatic checks (an `auto_check` setting in `/config`) and an icon.
-- **Codex plugin** (`.codex-plugin/`) with a repo marketplace (`.agents/plugins/marketplace.json`): `codex plugin marketplace add kg290/Trace`. Includes the skill, the Stop hook, starter prompts, brand color, icon and logo.
+- **Claude Code plugin** (`.claude-plugin/`) with its own marketplace: `/plugin marketplace add kg290/trace`. Includes the skill, automatic checks (an `auto_check` setting in `/config`) and an icon.
+- **Codex plugin** (`.codex-plugin/`) with a repo marketplace (`.agents/plugins/marketplace.json`): `codex plugin marketplace add kg290/trace`. Includes the skill, the Stop hook, starter prompts, brand color, icon and logo.
 - One cross-host hook (`hooks/hooks.json`) that works under bash, PowerShell and cmd. Turn it off with `TRACE_AUTO_CHECK=0` or `{"autoCheck": false}` in `.trace.json`.
 - Plugin installs find the helper through `trace-local` on PATH when no `runtime.json` exists.
 - **Automatic task-boundary checks** for Claude Code: `install.mjs --agent claude --auto-check`. It runs once per task that changed code, never twice in a row, and uninstall removes it.

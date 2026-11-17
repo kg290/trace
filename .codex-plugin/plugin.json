@@ -6,8 +6,8 @@
     "name": "TRACE contributors"
   },
   "license": "MIT",
-  "homepage": "https://github.com/kg290/Trace",
-  "repository": "https://github.com/kg290/Trace",
+  "homepage": "https://github.com/kg290/trace",
+  "repository": "https://github.com/kg290/trace",
   "keywords": [
     "testing",
     "verification",
@@ -36,6 +36,6 @@
     "brandColor": "#F59E0B",
     "composerIcon": "./assets/icon.png",
     "logo": "./assets/logo.png",
-    "websiteURL": "https://github.com/kg290/Trace"
+    "websiteURL": "https://github.com/kg290/trace"
   }
 }

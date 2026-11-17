@@ -9,13 +9,13 @@ The plugins' automatic check is a small Node.js script, so `node` (22.23+ or 24)
 ## Claude Code
 
 ```
-/plugin marketplace add kg290/Trace
+/plugin marketplace add kg290/trace
 ```
 ```
 /plugin install trace@trace
 ```
 
-Send these as two separate prompts. On Claude Code 2.1.275+ one prompt is enough: `/plugin install trace --marketplace kg290/Trace`. From a terminal, run `claude plugin marketplace add kg290/Trace`, then `claude plugin install trace@trace`.
+Send these as two separate prompts. On Claude Code 2.1.275+ one prompt is enough: `/plugin install trace --marketplace kg290/trace`. From a terminal, run `claude plugin marketplace add kg290/trace`, then `claude plugin install trace@trace`.
 
 The same commands work in the Claude Code desktop app: type them in the prompt box, or use **+** → **Plugins** → **Add plugin**.
 
@@ -24,7 +24,7 @@ Start a new session and type `/trace`. The plugin skill appears as **`/trace:tra
 ## Codex
 
 ```bash
-codex plugin marketplace add kg290/Trace
+codex plugin marketplace add kg290/trace
 codex plugin add trace@trace
 ```
 
@@ -37,7 +37,7 @@ Invoke it as **`$trace:trace`**, or pick TRACE under **`@`**.
 Clone the repo and install the skill straight into a project:
 
 ```bash
-git clone https://github.com/kg290/Trace.git && cd Trace
+git clone https://github.com/kg290/trace.git && cd trace
 node install.mjs --project /path/to/project                 # Claude Code and Codex skill folders
 node install.mjs --project /path/to/project --agent claude  # one host only (or codex)
 node install.mjs --project /path/to/project --agent claude --auto-check
