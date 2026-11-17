@@ -52,6 +52,7 @@ test('opt-in auto-check adds only its own Claude Code Stop hook, keeps user sett
   await installSkill(project, 'claude', { autoCheck: true });
   const installed = JSON.parse(await fs.readFile(settingsFile, 'utf8'));
   assert.equal(installed.model, 'kept'); assert.equal(installed.hooks.Stop.length, 2);
+  assert.equal(installed.hooks.UserPromptSubmit[0].hooks[0].command, installed.hooks.Stop[1].hooks[0].command);
   assert.match(installed.hooks.Stop[1].hooks[0].command, /skills\/trace\/auto-check\.mjs/);
   assert.equal(JSON.parse(await fs.readFile(path.join(project, '.claude/skills/trace/runtime.json'), 'utf8')).store, undefined);
   await uninstallSkill(project, 'claude');
@@ -62,16 +63,23 @@ test('auto-check hook asks once per changed task and stays quiet otherwise', asy
   const project = await tempRoot(t, 'auto-hook'), run = promisify(execFile);
   await run('git', ['init', '-q'], { cwd: project }); await fs.writeFile(path.join(project, 'app.js'), 'one');
   const hook = async (event: object) => {
-    const child = execFile(process.execPath, [path.resolve('skills/trace/auto-check.mjs')], { cwd: project });
+    const child = execFile(process.execPath, [path.resolve('skills/trace/auto-check.mjs')], { cwd: project, env: { ...process.env, TRACE_HOME: path.join(await tempRoot(t, 'hook-store'), 'incidents') } });
     let out = ''; child.stdout!.on('data', d => { out += d; }); child.stdin!.end(JSON.stringify({ cwd: project, ...event }));
     await new Promise(resolve => child.on('close', resolve)); return out.trim();
   };
+  const context = JSON.parse(await hook({ hook_event_name: 'UserPromptSubmit', prompt: 'private user words' })).hookSpecificOutput;
+  assert.equal(context.hookEventName, 'UserPromptSubmit');
+  assert.match(context.additionalContext, /before the first edit/);
+  assert(!context.additionalContext.includes('private user words'));
   assert.equal(await hook({}), '', 'first stop only records the starting state');
   await fs.writeFile(path.join(project, 'app.js'), 'two');
   assert.match(await hook({}), /"decision":"block".*trace skill/);
   await fs.writeFile(path.join(project, 'app.js'), 'three (fix made during the TRACE check)');
   assert.equal(await hook({ stop_hook_active: true }), '', 'never asks twice in a row');
   assert.equal(await hook({}), '', 'no change since the last stop');
+  const many = path.join(project, 'generated'); await fs.mkdir(many);
+  await Promise.all(Array.from({ length: 5001 }, (_, i) => fs.writeFile(path.join(many, `f${i}.txt`), '')));
+  assert.match(await hook({}), /"decision":"block"/, 'a change too large to diff still triggers the check');
   await fs.writeFile(path.join(project, '.trace.json'), JSON.stringify({ autoCheck: false })); await fs.writeFile(path.join(project, 'app.js'), 'four');
   assert.equal(await hook({}), '', 'project opt-out');
 });
@@ -88,4 +96,90 @@ test('Claude Code and Codex plugin manifests agree, point at real files, and sha
   const hooks = await read('hooks/hooks.json');
   assert.match(hooks.hooks.Stop[0].hooks[0].command, /CLAUDE_PLUGIN_ROOT.*'skills', 'trace', 'auto-check\.mjs'/);
   for (const entry of ['.claude-plugin', '.codex-plugin', 'hooks', 'assets', 'skills']) assert(pkg.files.includes(entry), entry);
+});
+
+test('a task keeps one original criterion across concurrent freezes, weaker retries and tampering', async t => {
+  const root = await tempRoot(t, 'criteria'), project = path.join(root, 'project'), store = path.join(root, 'store');
+  await fs.mkdir(project);
+  const skill = await installSkill(project);
+  await promisify(execFile)('git', ['init', '-q'], { cwd: project });
+  const sub = path.join(project, 'sub'); await fs.mkdir(sub);
+  const row = { quote: 'survives reload', expected: 'Reload shows Mira', check: 'Save Mira, then reload and read the name' };
+  const run = (args: string[], input?: unknown, cwd = project) => {
+    const child = promisify(execFile)(process.execPath, [path.join(skill, 'criteria.mjs'), ...args], {
+      cwd, env: { ...process.env, TRACE_HOME: store }
+    });
+    child.child.stdin!.end(input === undefined ? '' : JSON.stringify(input));
+    return child;
+  };
+  const hook = promisify(execFile)(process.execPath, [path.join(skill, 'auto-check.mjs')], {
+    cwd: sub, env: { ...process.env, TRACE_HOME: store }
+  });
+  hook.child.stdin!.end(JSON.stringify({ cwd: sub, hook_event_name: 'UserPromptSubmit', session_id: 'test-session' }));
+  const context = JSON.parse((await hook).stdout).hookSpecificOutput.additionalContext;
+  const id = /task ID ([a-f0-9-]{36})/.exec(context)![1];
+  await assert.rejects(run(['freeze', 'be35d9aa-b173-4bef-af92-67d65b1ba256'], [row]), /Unissued task ID/);
+  await fs.writeFile(path.join(project, 'change.txt'), 'edited after issuance');
+  const attempts = await Promise.allSettled([run(['freeze', id], [row]), run(['freeze', id], [row])]);
+  const saved = attempts.filter(result => result.status === 'fulfilled');
+  assert.equal(saved.length, 1);
+  const digest = saved[0].value.stdout.trim();
+  await assert.rejects(run(['freeze', id], [{ ...row, expected: 'Toast says Saved' }]), /already frozen/);
+  const read = async () => JSON.parse((await run(['read', id, digest], undefined, sub)).stdout);
+  const receipt = await read();
+  assert.deepEqual(receipt.criteria, [row]);
+  assert.match(receipt.timing, /changed between/);
+  assert.equal(receipt.issuance.source, 'prompt hook');
+  const second = (await run(['begin'])).stdout.trim();
+  const later = (await run(['freeze', second, row.quote, 'Weaker', row.check])).stdout.trim();
+  const current = JSON.parse((await run(['read', second, later])).stdout);
+  assert.match(current.warning, /Manual/);
+  assert.match(current.timing, /No observed Git change/);
+  assert(current.git.changedFiles > 0, 'pre-existing changes are distinguished from later edits');
+  assert.equal(current.related[0].digest, digest);
+  assert.equal((await read()).related[0].digest, later);
+  const [directory] = await fs.readdir(path.join(store, 'criteria'));
+  const file = path.join(store, 'criteria', directory, id + '.json');
+  await fs.unlink(file);
+  await assert.rejects(run(['freeze', id], [row]), /already frozen/);
+  assert.deepEqual((await read()).criteria, [row]);
+  await fs.writeFile(file, 'tampered');
+  await assert.rejects(run(['read', id, digest]), /original digest/);
+});
+
+test('prompt hook prunes issued IDs older than 30 days that were never frozen, and keeps frozen ones', async t => {
+  const project = await tempRoot(t, 'prune'), store = path.join(await tempRoot(t, 'prune-store'), 'incidents');
+  await promisify(execFile)('git', ['init', '-q'], { cwd: project });
+  const prompt = async () => {
+    const child = promisify(execFile)(process.execPath, [path.resolve('skills/trace/auto-check.mjs')], { cwd: project, env: { ...process.env, TRACE_HOME: store } });
+    child.child.stdin!.end(JSON.stringify({ cwd: project, hook_event_name: 'UserPromptSubmit' }));
+    await child;
+  };
+  await prompt();
+  const dir = path.join(store, 'criteria', (await fs.readdir(path.join(store, 'criteria')))[0]);
+  const old = new Date(Date.now() - 40 * 24 * 60 * 60 * 1000);
+  for (const name of ['stale.issued', 'kept.issued', 'kept.seal']) { await fs.writeFile(path.join(dir, name), '{}'); await fs.utimes(path.join(dir, name), old, old); }
+  await prompt();
+  const names = await fs.readdir(dir);
+  assert(!names.includes('stale.issued')); assert(names.includes('kept.issued')); assert(names.includes('kept.seal'));
+  assert.equal(names.filter(n => n.endsWith('.issued')).length, 3, 'two fresh issued IDs plus the frozen one');
+});
+
+test('prompt hook prunes stale unfrozen task IDs and keeps frozen ones', async t => {
+  const project = await tempRoot(t, 'prune'), store = path.join(await tempRoot(t, 'prune-store'), 'incidents');
+  await promisify(execFile)('git', ['init', '-q'], { cwd: project });
+  const prompt = async () => {
+    const child = promisify(execFile)(process.execPath, [path.resolve('skills/trace/auto-check.mjs')], { cwd: project, env: { ...process.env, TRACE_HOME: store } });
+    child.child.stdin!.end(JSON.stringify({ cwd: project, hook_event_name: 'UserPromptSubmit' }));
+    await child;
+  };
+  await prompt();
+  const [directory] = await fs.readdir(path.join(store, 'criteria')), dir = path.join(store, 'criteria', directory);
+  const old = new Date(Date.now() - 40 * 24 * 60 * 60 * 1000);
+  for (const name of ['stale.issued', 'frozen.issued', 'frozen.seal']) { await fs.writeFile(path.join(dir, name), '{}'); await fs.utimes(path.join(dir, name), old, old); }
+  await prompt();
+  const left = await fs.readdir(dir);
+  assert(!left.includes('stale.issued'), 'stale unfrozen ID removed');
+  assert(left.includes('frozen.issued') && left.includes('frozen.seal'), 'frozen task kept');
+  assert.equal(left.filter(name => name.endsWith('.issued')).length, 3, 'two fresh IDs plus the frozen one remain');
 });

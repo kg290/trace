@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
-const files = ['SKILL.md', 'auto-check.mjs', 'agents/openai.yaml', 'references/checks.md', 'references/helper.md', 'references/native-tools.md', 'assets/icon-small.png', 'assets/icon-large.png'];
+const files = ['SKILL.md', 'auto-check.mjs', 'criteria.mjs', 'agents/openai.yaml', 'references/checks.md', 'references/helper.md', 'references/native-tools.md', 'assets/icon-small.png', 'assets/icon-large.png'];
 const HOOK = 'node "$CLAUDE_PROJECT_DIR/.claude/skills/trace/auto-check.mjs"';
 const digest = value => createHash('sha256').update(value).digest('hex');
 async function noLinks(target) {
@@ -21,19 +21,27 @@ function hostFolder(host) {
   if (!['codex', 'claude'].includes(host)) throw new Error('Choose codex or claude.');
   return host === 'codex' ? '.agents' : '.claude';
 }
-/** Adds or removes only TRACE's Claude Code Stop hook in the project's settings; other settings stay untouched. */
+/** Adds or removes only TRACE's Claude Code hooks in the project's settings; other settings stay untouched. */
 async function setAutoCheck(projectRoot, enable) {
   const file = path.join(projectRoot, '.claude', 'settings.json'); await noLinks(file);
   const text = await fs.readFile(file, 'utf8').catch(error => { if (error.code !== 'ENOENT') throw error; return null; });
   if (text === null && !enable) return;
   let settings;
   try { settings = text === null ? {} : JSON.parse(text); } catch { throw new Error(`${file} is not plain JSON; add the Stop hook by hand: ${HOOK}`); }
-  if (!settings || typeof settings !== 'object' || Array.isArray(settings) || settings.hooks !== undefined && (typeof settings.hooks !== 'object' || Array.isArray(settings.hooks)) || settings.hooks?.Stop !== undefined && !Array.isArray(settings.hooks.Stop)) throw new Error(`Unexpected shape in ${file}; refusing to change it.`);
-  const stop = (settings.hooks?.Stop || []).filter(group => !group?.hooks?.some?.(hook => hook?.command === HOOK));
-  if (!enable && stop.length === (settings.hooks?.Stop || []).length) return;
-  if (enable) stop.push({ hooks: [{ type: 'command', command: HOOK }] });
-  const hooks = { ...settings.hooks, Stop: stop };
-  if (!stop.length) delete hooks.Stop;
+  if (!settings || typeof settings !== 'object' || Array.isArray(settings) || settings.hooks !== undefined && (!settings.hooks || typeof settings.hooks !== 'object' || Array.isArray(settings.hooks))) throw new Error(`Unexpected shape in ${file}; refusing to change it.`);
+  const hooks = { ...settings.hooks };
+  for (const event of ['Stop', 'UserPromptSubmit']) {
+    if (hooks[event] !== undefined && !Array.isArray(hooks[event])) throw new Error(`Unexpected ${event} hooks in ${file}`);
+    const kept = (hooks[event] || []).flatMap(group => {
+      if (!Array.isArray(group?.hooks) || !group.hooks.some(hook => hook?.command === HOOK)) return [group];
+      const other = group.hooks.filter(hook => hook?.command !== HOOK);
+      return other.length ? [{ ...group, hooks: other }] : [];
+    });
+    if (enable) kept.push({ hooks: [{ type: 'command', command: HOOK }] });
+    if (kept.length) hooks[event] = kept;
+    else if (hooks[event]?.length) delete hooks[event];
+  }
+  if (JSON.stringify(hooks) === JSON.stringify(settings.hooks || {})) return;
   if (Object.keys(hooks).length) settings.hooks = hooks; else delete settings.hooks;
   await fs.mkdir(path.dirname(file), { recursive: true });
   await fs.writeFile(file, JSON.stringify(settings, null, 2) + '\n');
@@ -94,7 +102,7 @@ export async function uninstallSkill(project, host = 'codex') {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     const { values } = parseArgs({ options: { project: { type: 'string', default: '.' }, agent: { type: 'string', default: 'both' }, uninstall: { type: 'boolean' }, 'auto-check': { type: 'boolean' }, help: { type: 'boolean' } } });
-    if (values.help) console.log('node install.mjs --project <project> [--agent codex|claude|both] [--auto-check] [--uninstall]\nInstalls the skill only. No npm install, browser download, model calls, or global settings.\n--auto-check (Claude Code only) adds a project Stop hook that asks for one TRACE check when a task changed code.');
+    if (values.help) console.log('node install.mjs --project <project> [--agent codex|claude|both] [--auto-check] [--uninstall]\nInstalls the skill only. No npm install, browser download, model calls, or global settings.\n--auto-check (Claude Code only) adds project prompt and Stop hooks for frozen criteria and task-boundary checks.');
     else {
       const hosts = values.agent === 'both' ? ['codex', 'claude'] : [values.agent];
       for (const host of hosts) console.log(values.uninstall ? await uninstallSkill(values.project, host) : await installSkill(values.project, host, { autoCheck: !!values['auto-check'] && host === 'claude' }));

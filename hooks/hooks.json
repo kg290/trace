@@ -12,6 +12,18 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"import(require('url').pathToFileURL(require('path').join(process.env.CLAUDE_PLUGIN_ROOT, 'skills', 'trace', 'auto-check.mjs')).href)\"",
+            "timeout": 30,
+            "statusMessage": "TRACE: preparing acceptance criteria"
+          }
+        ]
+      }
     ]
   }
 }

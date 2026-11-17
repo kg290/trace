@@ -2,7 +2,7 @@
 
 # Install
 
-Pick your agent below. TRACE is one skill ([`skills/trace/SKILL.md`](skills/trace/SKILL.md)). Everything else in this repo loads that skill into different agents, plus one optional Stop hook and an optional local helper.
+Pick your agent below. TRACE is one skill ([`skills/trace/SKILL.md`](skills/trace/SKILL.md)). Everything else in this repo loads that skill into different agents, plus optional task hooks and an optional local helper.
 
 The plugins' automatic check is a small Node.js script, so `node` (22.23+ or 24) needs to be on the PATH of non-interactive shells. Nix and nvm users: check this first.
 
@@ -63,6 +63,14 @@ npm run build
 | A plugin | Put `trace-local` on your PATH: `npm pack`, then `npm install -g ./trace-local-experiment-0.3.0.tgz --omit=dev --ignore-scripts` |
 
 Check it with `trace-local --version`. Commands, statuses and permission flags are in [docs/CLI.md](docs/CLI.md).
+
+## Freeze acceptance criteria before coding
+
+With TRACE hooks enabled, a new prompt tells the existing agent to freeze criteria for an implementation or fix. Each criterion quotes the request and records an expected outcome and how to check it. The agent shows the criteria and keeps the task ID and SHA-256 digest in the conversation before editing. At completion it reads the original criteria and reports evidence for each row. Manual skill users can invoke TRACE at the start of a coding task.
+
+Receipts are private files under the TRACE evidence store, outside the project. The receipt tool refuses a second freeze for the same task. The prompt hook issues the ID and records the Git revision, changed-file count and a fingerprint of local changes. Freeze records the time and compares the two observations. Existing edits may already be present at the prompt. Matching observations cannot detect edits that were reverted. Untracked-file comparisons use names, sizes and modification times. Outside Git, timing is unverified.
+
+Reads work from subfolders of the same Git checkout. They list later project freezes and earlier freezes in the same session; manual receipts carry a warning and list project history. A separately sealed copy preserves the original if its display file is removed. Keep the original ID and digest in the conversation: a local store cannot defend against someone who controls and rewrites all its files. A revised request gets a separate receipt. The hook guides the agent; it does not intercept edits or establish that the test ran. A verified fix still requires an observed failing baseline.
 
 ## Automatic checks
 

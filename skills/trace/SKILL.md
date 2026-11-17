@@ -7,6 +7,16 @@ description: Automatically check the current project or recent feature, discover
 
 **Your agent builds it. TRACE checks it.**
 
+## Before coding
+
+For an implementation or fix, first read the request and relevant contracts. Before editing source or tests, write one to six criteria. Each has a short exact `quote` from the user's request, an observable `expected` outcome and a concrete `check` describing the inputs, actions and comparison. Use a documented contract to justify details beyond the quote. Mark ambiguous details for review instead of inventing rules. Use safe excerpts and synthetic inputs only.
+
+For a continuing task, use its original receipt. For a new task, use the ID from the prompt hook or run `node <skill-directory>/criteria.mjs begin` for an explicitly manual receipt. Where supported, freeze the executable plan or browser oracle first and include its ID and digest in the check description.
+
+From the project root, run `node "<skill-directory>/criteria.mjs" freeze <task-id> "user quote" "expected outcome" "concrete check"` directly, repeating the three literal arguments for additional rows. Use non-sensitive text, safe shell quoting and no temporary project files. JSON array input on stdin also works. If the freeze fails, resolve it or report the blocker before editing. Show the user the criteria, task ID and returned SHA-256 before editing. Run the original checks to establish a baseline where possible. If work already started, disclose the late baseline.
+
+At completion run `node <skill-directory>/criteria.mjs read <task-id> <original-sha>` in the same project. Report the issuance source, timing and related receipt IDs (distinguish other tasks from revisions). If Git changed since issuance or timing is unavailable, disclose that before-edit timing is unverified. Check every original row, report its observation and evidence or why it was blocked. If integrity verification fails, mark verification blocked. A changed user request gets a new receipt referencing the previous ID in the report; keep both visible. A passing new requirement is acceptance; calling a fix verified also requires the same check to have failed first.
+
 ## Start immediately
 
 Bare `@trace`, `/trace`, or `$trace` means: **check the current project, prioritizing the feature or changes from this conversation**. Do not ask what to check, require a bug description, or send the user to a recorder. Use any supplied arguments to narrow the scope. Stay in this agent session.

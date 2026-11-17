@@ -33,6 +33,7 @@ try {
     url: { type: 'string' }, project: { type: 'string' }, store: { type: 'string' }, agent: { type: 'string' }, after: { type: 'string' }, limit: { type: 'string' }, kind: { type: 'string' }, file: { type: 'string' }, out: { type: 'string' }, inputs: { type: 'string' }, 'oracle-sha': { type: 'string' }, 'plan-sha': { type: 'string' }, 'allow-local-execution': { type: 'boolean' }, 'allow-local-side-effects': { type: 'boolean' }, 'share-with-current-agent': { type: 'boolean' }, 'auto-check': { type: 'boolean' }, help: { type: 'boolean' }, version: { type: 'boolean' }
   } });
   const [command, id] = positionals;
+  // Keep this default in sync with the standalone skills/trace/criteria.mjs.
   const root = values.store || process.env.TRACE_HOME || path.join(process.env.LOCALAPPDATA || path.join(os.homedir(), '.local', 'share'), 'trace-local', 'incidents');
   const store = new Store(root);
   const project = path.resolve(values.project || '.');

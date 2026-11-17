@@ -71,3 +71,21 @@ Unsupported environments are reported as **unsupported**, never as passes.
 ## Reproduce
 
 Run the commands in [CONTRIBUTING.md](../CONTRIBUTING.md#run-the-checks). Machine-specific output goes to the git-ignored `.test-output/`.
+
+## Prompt hook compatibility
+
+Two fresh Windows CLI sessions received the same request in separate copies of a one-file Node project: “Fix total so that an empty list returns zero and the sum of 2 and 3 remains 5. Check both cases.” The prompt did not mention TRACE. Claude Code loaded the working-tree plugin from a local directory. Codex loaded the same plugin from a local marketplace with hook trust scoped to the test process.
+
+| Host | Receipt frozen (UTC, 2026-11-17) | First source edit (UTC) | Result after the edit |
+| --- | --- | --- | --- |
+| Claude Code 2.1.318 | 20:04:12.106 | 20:04:15.283 | Observed 0 and 5 and read the original receipt |
+| Codex CLI 0.169.0-alpha.11.1 | 20:09:41.737 | 20:09:59.397 | Asserted 0 and 5 and read the original receipt |
+
+Each transcript shows the freeze returning before the first edit to `total.mjs`. The final successful read used the same task ID and SHA-256 digest as that session’s freeze. The stored receipt bytes independently matched those digests:
+
+- Claude Code: `864d71bde5bda7f2baf9894e0326231ed0fa1045a7e8ea0d1dbb5b95ce73c32f`
+- Codex: `1f507afdf6ed496d5898ca5188959aaf40a303b53782cf799dd7d735880b4332`
+
+The first Claude trial exposed a blocked stdin pipeline. The successful trials used the direct argument form of `freeze`. Codex’s alternate shell needed the same custom `TRACE_HOME` as the hook and retried successfully before editing. With a custom store, configure that environment variable consistently across tools.
+
+These trials cover one task per host with hooks enabled. The prompt hook asks the agent to freeze before editing. It does not intercept every file write.
