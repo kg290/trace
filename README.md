@@ -13,7 +13,7 @@
 
 <p align="center">
   <a href="https://github.com/kg290/Trace/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/kg290/Trace/ci.yml?branch=main&style=flat-square&label=ci&color=111827" alt="CI"></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-0.3.0-111827?style=flat-square" alt="Version 0.3.0"></a>
+  <a href="https://github.com/kg290/Trace/releases/latest"><img src="https://img.shields.io/github/v/release/kg290/Trace?style=flat-square&color=111827&label=release" alt="Latest release"></a>
   <a href="#install"><img src="https://img.shields.io/badge/plugin-Claude%20Code%20%C2%B7%20Codex-111827?style=flat-square" alt="Plugin for Claude Code and Codex"></a>
   <a href="https://github.com/kg290/Trace/stargazers"><img src="https://img.shields.io/github/stars/kg290/Trace?style=flat-square&color=111827&label=stars" alt="Stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-111827?style=flat-square" alt="MIT license"></a>

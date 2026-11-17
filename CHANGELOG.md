@@ -6,13 +6,6 @@
 
 All notable changes to TRACE. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## Unreleased
-
-### Changed
-- New brand: the TRACE logo across the README, docs, both plugins and the Codex skill, plus a social preview image.
-- Documentation rewritten in a plainer, more direct style, with new [INSTALL](INSTALL.md) and [ROADMAP](ROADMAP.md) pages and a hero image built from the real demo screenshots.
-- CI: a valid workflow file, a packaging test that installs from npm's cache and revalidates online, and a masking test that ignores 1-pixel font antialiasing outside the private area.
-
 ## 0.3.0 · 2026-11-17
 
 **A plugin for Claude Code and Codex, and proof that a fix worked, not just a pass.**
@@ -31,6 +24,9 @@ All notable changes to TRACE. The format follows [Keep a Changelog](https://keep
 - **Expected-error checks** for libraries (`throws`).
 
 ### Changed
+- New brand: the TRACE logo across the README, docs, both plugins and the Codex skill, plus a social preview image.
+- Documentation rewritten in a plainer, more direct style, with new [INSTALL](INSTALL.md) and [ROADMAP](ROADMAP.md) pages and a hero image built from the real demo screenshots.
+- CI: a valid workflow file, a packaging test that installs from npm's cache and revalidates online, and a masking test that ignores 1-pixel font antialiasing outside the private area.
 - `verify` replays the agent's flow exactly, `waitFor` included. It checks "after actions" before a trailing reload and runs HTTP checks last.
 - Requests blocked to other sites mark a run `blocked` only when a check actually failed.
 - `run` names the failed step and the reason.
