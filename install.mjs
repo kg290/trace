@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
-const files = ['SKILL.md', 'auto-check.mjs', 'agents/openai.yaml', 'references/checks.md', 'references/helper.md', 'references/native-tools.md'];
+const files = ['SKILL.md', 'auto-check.mjs', 'agents/openai.yaml', 'references/checks.md', 'references/helper.md', 'references/native-tools.md', 'assets/icon-small.png', 'assets/icon-large.png'];
 const HOOK = 'node "$CLAUDE_PROJECT_DIR/.claude/skills/trace/auto-check.mjs"';
 const digest = value => createHash('sha256').update(value).digest('hex');
 async function noLinks(target) {
@@ -80,14 +80,14 @@ export async function uninstallSkill(project, host = 'codex') {
   const listed = await fs.readdir(destination, { recursive: true, withFileTypes: true });
   for (const entry of listed) {
     const name = path.relative(destination, path.join(entry.parentPath, entry.name)).replaceAll('\\', '/');
-    if (entry.isSymbolicLink() || entry.isDirectory() && !['agents', 'references'].includes(name) || entry.isFile() && ![...names, 'trace-owned.json'].includes(name)) throw new Error('Skill has user files or paths; refusing removal.');
+    if (entry.isSymbolicLink() || entry.isDirectory() && !['agents', 'references', 'assets'].includes(name) || entry.isFile() && ![...names, 'trace-owned.json'].includes(name)) throw new Error('Skill has user files or paths; refusing removal.');
   }
   for (const name of names) {
     const target = path.join(destination, name);
     if ((await fs.stat(target)).size > 20000 || digest(await fs.readFile(target)) !== owned[name]) throw new Error('Skill has user changes; refusing removal.');
   }
   for (const name of [...names, 'trace-owned.json']) await fs.unlink(path.join(destination, name));
-  for (const name of ['agents', 'references']) await fs.rmdir(path.join(destination, name)).catch(error => { if (error.code !== 'ENOENT') throw error; });
+  for (const name of ['agents', 'references', 'assets']) await fs.rmdir(path.join(destination, name)).catch(error => { if (error.code !== 'ENOENT') throw error; });
   await fs.rmdir(destination); return destination;
 }
 

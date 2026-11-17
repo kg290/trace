@@ -33,7 +33,7 @@
       "Check the feature you just built.",
       "Verify this fix with TRACE."
     ],
-    "brandColor": "#7C3AED",
+    "brandColor": "#F59E0B",
     "composerIcon": "./assets/icon.png",
     "logo": "./assets/logo.png",
     "websiteURL": "https://github.com/kg290/Trace"

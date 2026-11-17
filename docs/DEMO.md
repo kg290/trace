@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="../assets/logo.svg" width="72" alt="TRACE logo"/>
+
 # 🎬 The save that didn't save
 
 **A seeded bug, caught, fixed and verified, using real screenshots.**

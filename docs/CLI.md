@@ -1,3 +1,5 @@
+<img src="../assets/logo.svg" width="48" align="right" alt="TRACE logo"/>
+
 # 🧰 Helper CLI
 
 [← README](../README.md) · [Browser flows](../skills/trace/references/helper.md) · [Nonvisual checks](../skills/trace/references/checks.md)

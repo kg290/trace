@@ -1,6 +1,8 @@
 <div align="center">
 
-# 🔎 TRACE
+<img src="assets/logo.svg" width="112" alt="TRACE logo"/>
+
+# TRACE
 
 ### Your agent builds it. TRACE checks it.
 

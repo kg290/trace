@@ -1,3 +1,5 @@
+<img src="assets/logo.svg" width="48" align="right" alt="TRACE logo"/>
+
 # 🔐 Security policy
 
 [← README](README.md) · [Privacy & permissions](docs/PRIVACY.md)

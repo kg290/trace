@@ -1,3 +1,5 @@
+<img src="../../assets/logo.svg" width="48" align="right" alt="TRACE logo"/>
+
 # 🔢 Number Kit (demo fixture)
 
 [← README](../../README.md) · [Check format](../../skills/trace/references/checks.md)

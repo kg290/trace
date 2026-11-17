@@ -1,3 +1,5 @@
+<img src="../../assets/logo.svg" width="48" align="right" alt="TRACE logo"/>
+
 # 👤 Profile app (demo fixture)
 
 [← Demo walkthrough](../../docs/DEMO.md)

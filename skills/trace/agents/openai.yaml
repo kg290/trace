@@ -1,4 +1,7 @@
 interface:
   display_name: "TRACE"
   short_description: "Your agent builds it. TRACE checks it."
+  icon_small: "./assets/icon-small.png"
+  icon_large: "./assets/icon-large.png"
+  brand_color: "#F59E0B"
   default_prompt: "Use $trace to automatically check the current project and recent changes."

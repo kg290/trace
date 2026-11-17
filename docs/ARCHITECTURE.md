@@ -1,3 +1,5 @@
+<img src="../assets/logo.svg" width="48" align="right" alt="TRACE logo"/>
+
 # 🏗️ Architecture
 
 [← README](../README.md) · [Privacy](PRIVACY.md) · [Validation](VALIDATION.md)

@@ -1,3 +1,5 @@
+<img src="assets/logo.svg" width="48" align="right" alt="TRACE logo"/>
+
 # 📝 Changelog
 
 [← README](README.md) · [Validation](docs/VALIDATION.md)

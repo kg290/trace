@@ -1,3 +1,5 @@
+<img src="../assets/logo.svg" width="48" align="right" alt="TRACE logo"/>
+
 # 🧪 Validation ledger
 
 [← README](../README.md) · [Demo](DEMO.md) · [Contributing](../CONTRIBUTING.md)
