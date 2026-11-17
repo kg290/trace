@@ -1,12 +1,12 @@
 <img src="../assets/logo.svg" width="48" align="right" alt="TRACE logo"/>
 
-# 🧠 Design decisions
+# Design decisions
 
 [← README](../README.md) · [Architecture](ARCHITECTURE.md) · [Validation](VALIDATION.md)
 
 Browser automation, screenshots, replay and assertions all exist already. TRACE's job is to put them to work for the agent you already use, so that **you** stop being the tester.
 
-## ⚖️ Decisions and why
+## Decisions and why
 
 | Decision | Why |
 | --- | --- |
@@ -21,7 +21,7 @@ Browser automation, screenshots, replay and assertions all exist already. TRACE'
 | **Measure, don't promise** | Runs and time to a verified fix are recorded. No savings are claimed without data. |
 | **Opt-in automation** | Checks at task boundaries run only when you install the hook, never mid-task. |
 
-## ✂️ Complexity removed
+## Complexity removed
 
 Version 0.2 removed:
 - the manual recorder and its workbench UI,
@@ -35,7 +35,7 @@ The next release also removes the in-page action recorder and recipe reconstruct
 
 The safety rails stayed: privacy filtering, frozen checks, persistence regressions and package lifecycle tests.
 
-## 📖 References
+## References
 
 - [Agent Skills specification](https://agentskills.io/specification): skill metadata and progressive references
 - [Claude Code skills](https://code.claude.com/docs/en/skills): project skills and slash invocation
@@ -44,6 +44,6 @@ The safety rails stayed: privacy filtering, frozen checks, persistence regressio
 - [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp): a host browser integration used during validation
 - [GitHub Mermaid support](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams): diagrams in these docs
 
-## 🚧 Not established yet
+## Not established yet
 
 There is no competitor comparison, blind multi-project bug-finding evaluation, user-effort study or end-to-end token-savings measurement yet. The demo uses a known, seeded bug. The name TRACE is provisional.

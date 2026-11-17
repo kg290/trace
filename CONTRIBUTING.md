@@ -1,73 +1,67 @@
 <img src="assets/logo.svg" width="48" align="right" alt="TRACE logo"/>
 
-# 🤝 Contributing to TRACE
+# Contributing
 
-[← README](README.md) · [Architecture](docs/ARCHITECTURE.md) · [Security](SECURITY.md)
+Thanks for helping. Here is what gets merged, and what needs to come with it.
 
-Thanks for helping. TRACE has one rule that shapes every change:
+TRACE has one rule that shapes every change: **check real behavior against a known expectation, keep the evidence, and re-check the same expectation after a fix.** If something can't be checked, say so. Never fake a pass.
 
-> **Check real behavior against a known expectation, keep the evidence, and re-check the same expectation after a fix.** If something can't be checked, say so. Never fake a pass.
+## Wrong findings are bugs
 
-## 🧭 Ways to help
+If TRACE called something a defect that isn't, missed one, or claimed a fix it never saw fail, [open an issue](https://github.com/kg290/Trace/issues/new?template=bug_report.md). Include the expectation TRACE used and where the real one comes from. A sanitized finding is enough, and no video is needed.
 
-| | |
-| --- | --- |
-| 🐛 **Report a wrong finding** | TRACE called something a bug that isn't, or missed one. [Open a bug report](.github/ISSUE_TEMPLATE/bug_report.md). |
-| 🔌 **Add an integration** | A new runtime, host or driver. Read [Add an integration](docs/ARCHITECTURE.md#-adding-an-integration) first. |
-| 📝 **Improve the docs** | Fix what confused you. That's often the most valuable PR. |
+## Changes to the skill need a before and after
 
-## 🛠️ Setup
+The skill text ([`skills/trace/SKILL.md`](skills/trace/SKILL.md) and `references/`) is what every TRACE user's agent reads. A change there gets merged only if the PR shows:
 
-You need the Node version in [`.node-version`](.node-version) (22.23+ or 24).
+- the scenario your change should improve, run before and after on the same model,
+- one existing scenario it could break, run before and after, still behaving,
+- which host and model you used.
 
-```sh
+The demo fixtures ([`examples/profile`](examples/profile/README.md) and [`examples/number-kit`](examples/number-kit/README.md)) are the cheapest place to show it.
+
+## Code changes need a test
+
+New behavior in `src/`, `install.mjs` or the hook gets one focused test that fails without the change. Don't copy the implementation into the test. Bug fixes start from a failing test and keep it.
+
+A new integration (a runtime, host or driver) needs a real way to operate and inspect the environment, a test that shows it reports a failure, and a stated permission boundary. Until then the area stays **unsupported**. Read [Adding an integration](docs/ARCHITECTURE.md#adding-an-integration) first.
+
+## Setup
+
+Use the Node version in [`.node-version`](.node-version) (22.23+ or 24).
+
+```bash
 npm ci --ignore-scripts
 npx playwright install chromium      # Linux: add --with-deps
 npm run build
 ```
 
-## ✅ Run the checks
+## Checks
 
-| Command | What it covers |
+| Command | Covers |
 | --- | --- |
 | `npm run check` | TypeScript, including unused symbols |
-| `npm test` | Unit and integration tests: installer, HTTP/CLI/library checks, statuses, auto-check hook |
-| `npm run test:browser` | Browser tests: flows, verification, masking, origin blocking, failure handling |
-| `npm run test:independent` | A Playwright test of the demo app that imports no TRACE code |
+| `npm test` | Installer, HTTP/CLI/library checks, statuses, auto-check hook, plugin manifests |
+| `npm run test:browser` | Flows, verification, masking, origin blocking, failure handling |
+| `npm run test:independent` | The demo app's contract with plain Playwright, without TRACE |
 | `npm run docs:check` | Markdown links, code fences, demo assets, frozen demo criteria |
-| `npm run pack:smoke` | Packs, installs and runs the helper from a clean folder |
-| `claude plugin validate --strict .` | Claude Code plugin and marketplace manifests (needs the `claude` CLI) |
+| `npm run pack:smoke` | Packs, installs (cache first) and runs the helper from a clean folder |
+| `claude plugin validate --strict .` | Claude Code plugin and marketplace manifests |
 
-Plugin manifests live in `.claude-plugin/` and `.codex-plugin/`, and both point at the same `skills/` and `hooks/hooks.json`. Keep their `version` equal to `package.json`; `npm test` checks this. To try local changes, use `claude --plugin-dir .`, or add this folder as a Codex marketplace with `codex plugin marketplace add ./`.
+CI runs all of these except the last on Windows and Ubuntu. Tests use synthetic data, bind only to `127.0.0.1`, need no model credentials, and clean up after themselves.
 
-Tests use synthetic data, bind only to `127.0.0.1`, need no model credentials, and clean up their temporary folders.
+To try local plugin changes, use `claude --plugin-dir .`, or add the folder as a Codex marketplace with `codex plugin marketplace add ./`. Keep the `version` in `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` equal to `package.json`; `npm test` checks this.
 
-> [!TIP]
-> Keeping browser downloads or the npm cache on another drive? Set `PLAYWRIGHT_BROWSERS_PATH` and `npm_config_cache` before installing. Use the same `npm_config_cache` for `pack:smoke`, because it installs offline.
+## Before you open a PR
 
-## 📐 What makes a good change
+- Search what your change reaches: callers, fixtures, CLI help, the installer's owned-file list, skill references, package contents and docs.
+- Keep the safety rails: input validation, path checks, permission flags and private-data filtering.
+- Never commit evidence stores, absolute local paths, credentials or a generated `runtime.json`.
+- Fill in the [PR template](.github/pull_request_template.md): what and why, how it was checked, the evidence, and what isn't covered.
 
-- **Start from a concrete problem.** Describe what happened and what should happen.
-- **Reuse before adding.** Prefer an existing tool, helper or dependency over a new driver, daemon or abstraction.
-- **Keep the safety rails.** Input validation, path checks, permission flags and private-data filtering stay in place.
-- **Fixes need a failing check first.** Reproduce the bug, then re-run the *same* check after the fix.
-- **Add one focused test** for new behavior. Don't copy the implementation into the test.
-- **Report gaps honestly.** Keep blocked or untested results separate from passes.
+## Releases
 
-Changes often reach further than the file you edited: callers, fixtures, CLI help, installer ownership lists, skill references, package contents and docs. Search before you edit. `npm run build` wipes `dist/` first, so deleted modules can't sneak into a release.
-
-## 🔀 Pull requests
-
-The [PR template](.github/pull_request_template.md) asks for three things: the problem, how you validated it, and the evidence. Keep it proportional to the change.
-
-Never commit evidence stores, absolute local paths, credentials or generated `runtime.json` files. Use synthetic or sanitized evidence only.
-
-## 📦 Releases
-
-The skill installs without dependencies. The optional helper is packed with `npm pack` and is not published to a registry. Before a release:
-
-1. Run every check above.
-2. Inspect the packed file list and confirm no private evidence is inside.
-3. Update the [changelog](CHANGELOG.md) and record checksums.
-
-Publishing is a separate maintainer action.
+1. Bump the version in `package.json`, `src/types.ts` and both plugin manifests.
+2. Run every check above, and inspect `npm pack --dry-run` for private files.
+3. Move *Unreleased* in the [CHANGELOG](CHANGELOG.md) under the new version.
+4. Tag `vX.Y.Z` and publish a GitHub release.

@@ -1,12 +1,12 @@
 <img src="../assets/logo.svg" width="48" align="right" alt="TRACE logo"/>
 
-# 🏗️ Architecture
+# Architecture
 
 [← README](../README.md) · [Privacy](PRIVACY.md) · [Validation](VALIDATION.md)
 
 TRACE is **not another agent**. It is a workflow that runs inside the coding agent you already use. The agent understands your project, your tools exercise the software, and an optional deterministic helper keeps bounded evidence and repeats exact checks.
 
-## 🧩 The three parts
+## The three parts
 
 ```mermaid
 flowchart TB
@@ -29,7 +29,7 @@ flowchart TB
 
 The main skill file is short. Detailed instructions for host tools, the helper and nonvisual checks live in `skills/trace/references/` and load only when needed. The installer writes `runtime.json` next to the skill. If its `cli` is `null`, the helper wasn't built, and the skill uses host tools only.
 
-## 🔁 Evidence & verification lifecycle
+## Evidence & verification lifecycle
 
 ```mermaid
 stateDiagram-v2
@@ -52,11 +52,11 @@ stateDiagram-v2
 
 With host tools, the agent keeps the same discipline by hand. It saves the scenario and expectations, hashes them, and repeats them unchanged. Host tools don't inherit the helper's browser isolation or masking.
 
-## 🗄️ Helper evidence store
+## Helper evidence store
 
 Evidence lives **outside the project**, in a per-user folder by default. Each incident has a manifest, an event timeline, the exact flow, a compact brief for the agent, screenshots, and an integrity index. Writes are atomic and paths are checked for symlinks. Raw and agent-approved copies are kept separate, and every omission (dropped events, blocked requests, failed steps) is recorded explicitly.
 
-## 🗺️ Source map
+## Source map
 
 | File | Responsibility |
 | --- | --- |
@@ -70,7 +70,7 @@ Evidence lives **outside the project**, in a per-user folder by default. Each in
 | [`auto-check.mjs`](../skills/trace/auto-check.mjs) · [`hooks.json`](../hooks/hooks.json) | Stop hook for task-boundary checks, shared by both plugins and the installer |
 | [`.claude-plugin/`](../.claude-plugin/plugin.json) · [`.codex-plugin/`](../.codex-plugin/plugin.json) | Plugin manifests; marketplaces in `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json` |
 
-## 🔌 Adding an integration
+## Adding an integration
 
 A new integration is welcome when it actually works end to end. It needs:
 

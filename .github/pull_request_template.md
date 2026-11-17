@@ -1,8 +1,8 @@
-## 🎯 What & why
+## What & why
 
 <!-- The concrete problem and the behavior after this change. Link the issue or contract. -->
 
-## 🧪 How it was checked
+## How it was checked
 
 <!-- Commands run and their results. For a fix: the failing check before, and the same check passing after. -->
 
@@ -11,10 +11,10 @@
 - [ ] `npm run test:browser` (if browser code changed)
 - [ ] `npm run docs:check` (if docs changed)
 
-## 🧾 Evidence
+## Evidence
 
 <!-- Synthetic or sanitized only. No evidence stores, local paths, credentials or generated runtime.json. -->
 
-## 🚧 Not covered
+## Not covered
 
 <!-- Anything blocked, untested or unsupported. "None" is a valid answer. -->

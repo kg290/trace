@@ -1,167 +1,107 @@
-<div align="center">
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg">
+    <img src="assets/logo.svg" width="120" alt="TRACE logo">
+  </picture>
+</p>
 
-<img src="assets/logo.svg" width="112" alt="TRACE logo"/>
+<h1 align="center">TRACE</h1>
 
-# TRACE
+<p align="center">
+  <em>Your agent builds it. TRACE checks it.</em>
+</p>
 
-### Your agent builds it. TRACE checks it.
+<p align="center">
+  <a href="https://github.com/kg290/Trace/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/kg290/Trace/ci.yml?branch=main&style=flat-square&label=ci&color=111827" alt="CI"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-0.3.0-111827?style=flat-square" alt="Version 0.3.0"></a>
+  <a href="#install"><img src="https://img.shields.io/badge/plugin-Claude%20Code%20%C2%B7%20Codex-111827?style=flat-square" alt="Plugin for Claude Code and Codex"></a>
+  <a href="https://github.com/kg290/Trace/stargazers"><img src="https://img.shields.io/github/stars/kg290/Trace?style=flat-square&color=111827&label=stars" alt="Stars"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-111827?style=flat-square" alt="MIT license"></a>
+</p>
 
-Stop manually checking and explaining everything your AI builds.<br/>
-TRACE exercises the software, shows evidence of problems, and proves that the fixes work.
+<p align="center">
+  <img src="assets/hero.png" width="880" alt="Three real screenshots. 1: the agent's change shows Saved, but the server answered PATCH 422. 2: TRACE reloads and the old name Alex Rivera is back, so the change was lost. 3: after the fix, the same frozen checks pass, including the 422 and 403 rejections. Baseline reproduced, 2 of 4 checks failed; after the fix, verified, 4 of 4 passed; criteria hash unchanged.">
+</p>
 
-[![Version](https://img.shields.io/badge/version-0.3.0-6f42c1)](CHANGELOG.md)
-[![License: MIT](https://img.shields.io/badge/license-MIT-2ea44f)](LICENSE)
-[![Node](https://img.shields.io/badge/node-22.23%2B%20%7C%2024-339933?logo=node.js&logoColor=white)](.node-version)
-[![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-d97757)](#-claude-code)
-[![Codex plugin](https://img.shields.io/badge/Codex-plugin-111111)](#-codex)
-[![Status](https://img.shields.io/badge/status-experimental-orange)](docs/VALIDATION.md)
+<p align="center">
+  <strong>Stop being the tester for code your AI wrote.</strong><br>
+  TRACE runs the software, shows you the evidence, and proves the fix with the same checks that failed.<br>
+  <sub>A plugin for Claude Code and Codex. No API keys, no telemetry. Real screenshots from the <a href="docs/DEMO.md">seeded demo</a>.</sub>
+</p>
 
-[**Quick start**](#-quick-start) · [**What it checks**](#-what-it-checks) · [**Proving fixes**](#-proving-a-fix-not-just-a-pass) · [**FAQ**](#-faq) · [**Docs**](#-documentation)
-
-</div>
-
-<br/>
-
-| ① The agent says it's done | ② TRACE reloads: the change is gone | ③ After the fix: verified |
-| :---: | :---: | :---: |
-| ![The profile shows a false "Saved" message](docs/assets/profile-false-saved.png) | ![After reloading, the old name Alex Rivera is back](docs/assets/profile-lost.png) | ![After the fix, the new name survives reload](docs/assets/profile-verified.png) |
-| UI says **Saved**, but the server answered **422** | Same scenario, checked after reload | Same frozen checks pass, and the 422/403 rejections still hold |
-
-<sub>Real screenshots from the seeded <a href="docs/DEMO.md">profile demo</a>. Synthetic data only.</sub>
+<p align="center">
+  <a href="#install">Install</a> &middot;
+  <a href="#how-it-works">How it works</a> &middot;
+  <a href="#what-it-checks">What it checks</a> &middot;
+  <a href="#proving-a-fix">Proving a fix</a> &middot;
+  <a href="#faq">FAQ</a> &middot;
+  <a href="ROADMAP.md">Roadmap</a>
+</p>
 
 ---
 
-## 💡 Why TRACE
+## Why
 
-Coding agents are fast at writing code and bad at noticing that it doesn't work. Usually *you* end up as the tester. You click through the app, take screenshots, copy logs, and type "it still doesn't work" for the fifth time.
+You ask for a feature. The agent says it's done. You open the app, click around, find it broken, take a screenshot, paste the logs, and type *"it still doesn't work"* for the fifth time.
 
-TRACE takes over that loop. **Type `/trace`. Nothing else is required.**
+TRACE does that part. Type `/trace` and it picks what to check from your request, the diff, the docs and the tests. It runs the software, collects the evidence, and hands your agent a compact finding instead of a wall of logs. When the agent fixes something, TRACE re-runs the **same frozen check that failed**. A pass that never failed doesn't count.
 
-- 🧭 **Picks what to check.** It reads your request, the recent diff, docs and existing tests, then runs a small set of meaningful scenarios.
-- 🖱️ **Actually runs the software.** It clicks through web UIs, calls APIs, runs CLIs and calls library functions.
-- 📸 **Collects the evidence for you.** You get screenshots, failing inputs, HTTP statuses, console errors, stack traces and layout measurements, all captured automatically.
-- 🧾 **Reports what matters.** Each finding says what was checked, what was expected and why, what happened, how to reproduce it, and the evidence.
-- ✅ **Proves the fix.** The original check is frozen before the fix. A fix is "verified" only when that same check failed first and passes afterwards.
-- 🔌 **Works with the agent you already use.** TRACE is a plugin for Claude Code and Codex, not another agent or service. It needs no API keys and sends no telemetry.
+## Install
 
-## 🚀 Quick start
+**Claude Code**, as two separate prompts:
 
-TRACE installs as a **plugin** in Claude Code and Codex. One install covers every project.
-
-<a id="-claude-code"></a>
-
-### 🟠 Claude Code
-
-```text
+```
 /plugin marketplace add kg290/Trace
+```
+```
 /plugin install trace@trace
 ```
 
-On Claude Code 2.1.275+ this works as a single command: `/plugin install trace --marketplace kg290/Trace`. From a terminal, use `claude plugin marketplace add kg290/Trace` and then `claude plugin install trace@trace`.
+**Codex:**
 
-Then, in any project:
-
-```text
-/trace
-```
-
-It appears as **`/trace:trace`** in the picker, because plugin skills carry their plugin's name.
-
-<a id="-codex"></a>
-
-### ⚫ Codex
-
-```sh
+```bash
 codex plugin marketplace add kg290/Trace
+codex plugin add trace@trace
 ```
 
-Open **`/plugins`**, install **TRACE**, and start a new session. Type **`$trace`**, or pick TRACE under **`@`**. Codex asks you to review TRACE's hook once; approve it to enable [automatic checks](#automatic-checks).
+Then open `/hooks` in Codex, trust TRACE's Stop hook, and start a new thread.
 
-### What you get
+**Any other agent**, or a single project without a plugin: `node install.mjs --project <path>` from a clone. Step by step, including the optional local helper: **[INSTALL.md](INSTALL.md)**.
 
-| | Claude Code | Codex |
-| --- | :---: | :---: |
-| `/trace` · `$trace` skill, no arguments needed | ✅ | ✅ |
-| Automatic check at the end of a task that changed code | ✅ on by default | ✅ after you approve the hook |
-| Toggle automatic checks in settings | ✅ `/config` → TRACE | ✅ hook trust |
-| Starter prompts and icon in the plugin browser | ✅ | ✅ |
+Only install TRACE from [`kg290/Trace`](https://github.com/kg290/Trace) on GitHub.
 
-A bare `/trace` means *"check this project, starting with what we just worked on."*
+## Use it
 
-<details>
-<summary><b>📁 Install into one project instead (no plugin)</b></summary>
-
-<br/>
-
-Requires Node.js 22.23+ or 24. This copies a skill folder and nothing else: no npm install, no browser download, no global changes.
-
-```sh
-git clone https://github.com/kg290/Trace.git && cd Trace
-node install.mjs --project /path/to/project                          # both hosts
-node install.mjs --project /path/to/project --agent claude --auto-check
-node install.mjs --project /path/to/project --uninstall
-```
-
-The installer never overwrites. It refuses to install over an existing skill and refuses to remove files you edited. Use either the plugin or this installer, not both, or you'll see TRACE twice.
-
-</details>
-
-<details>
-<summary><b>🔄 Update or remove the plugin</b></summary>
-
-<br/>
-
-| | Claude Code | Codex |
-| --- | --- | --- |
-| Update | `/plugin marketplace update trace` | `codex plugin marketplace upgrade trace` |
-| Remove | `/plugin uninstall trace@trace` | Uninstall in `/plugins`, then `codex plugin marketplace remove trace` |
-
-</details>
-
-
-## 🗣️ Just say what you want
-
-| You type | TRACE does |
+| You type | What happens |
 | --- | --- |
-| `/trace` | Checks the project, starting with the feature from this conversation |
-| `/trace check the feature you just built` | Runs the normal path, an edge case, error handling and the parts it touches |
-| `/trace verify this fix` | Re-runs the frozen failing scenario plus regression checks |
-| `/trace check the login page` | Checks only that area |
+| `/trace` | Checks the project, starting with what you just worked on |
+| `/trace check the feature you just built` | The normal path, an edge case, error handling, and the parts the change touches |
+| `/trace verify this fix` | Re-runs the frozen failing scenario, plus regression checks |
+| `/trace check the login page` | Only that area |
 
-If you only asked for a check, TRACE reports findings and changes no code. If the task includes fixing, your agent fixes the code and TRACE re-checks the original expectation.
+The plugin skill lives under its plugin's name: **`/trace:trace`** in Claude Code (typing `/trace` finds it) and **`$trace:trace`** in Codex (or pick TRACE under `@`). A check-only request reports findings and changes no code. If the task includes fixing, your agent fixes and TRACE proves it.
 
-<a id="automatic-checks"></a>
+## How it works
 
-## ⏱️ Automatic checks
+1. **Scope.** It reads your request, the recent diff, the README, manifests, existing tests and documented examples. Uncommitted work is left alone.
+2. **Choose.** It picks at most six scenarios: the normal path, an edge or error case, the parts the change touches, and regressions. Every expectation needs a source. A guess becomes **needs review**, never a bug.
+3. **Run.** It uses your agent's own browser, terminal and test tools first. An optional local helper adds exact, repeatable browser, HTTP, CLI and library checks.
+4. **Report.** Each finding gives what was checked, what was expected (and from where), what actually happened, how to reproduce it, and the evidence. Duplicates are grouped and ranked by impact.
+5. **Prove.** Before a fix, the checks are frozen and hashed. Afterwards, the same scenario runs again, with regression checks around it.
 
-When a task changed your code, TRACE checks that change once before the agent hands back. It never interrupts you mid-task and never asks twice in a row. It stays silent when nothing changed. It works in git projects.
+## What it checks
 
-| | How |
-| --- | --- |
-| **Claude Code plugin** | On by default. Turn it off in `/config` → **TRACE** → *Automatic checks* |
-| **Codex plugin** | Runs after you approve TRACE's hook in Codex |
-| **No plugin** | `node install.mjs --project <path> --agent claude --auto-check` |
-| **Off for one project** | Add `{"autoCheck": false}` to the project's `.trace.json` |
-| **Off everywhere** | Set `TRACE_AUTO_CHECK=0` |
-
-
-## 🧰 What it checks
-
-TRACE uses your agent's own tools first: its browser, terminal, screenshots and your test suite. An [optional local helper](docs/CLI.md) adds exact, repeatable checks when those aren't enough.
-
-| Project type | What TRACE does | Evidence you get |
+| Project | What TRACE does | Evidence |
 | --- | --- | --- |
-| 🌐 **Web apps** | Explores screens, fills forms, clicks, reloads, checks saved state | Screenshots, visible messages, HTTP statuses, console and runtime errors, layout measurements (clipped controls, horizontal overflow) |
-| 🔌 **APIs & backends** | Calls endpoints, then reads the data back to confirm writes were saved | Requests and responses, exact status and JSON checks |
-| ⌨️ **CLIs & scripts** | Runs representative commands | Exit code, stdout/stderr, generated files (a stale file can't pass) |
-| 📦 **Libraries & data code** | Calls public functions with representative inputs | Return values or expected errors, async included |
-| 🖥️ **Desktop & mobile** | Only through a real driver your host provides | Otherwise reported as **unsupported**, never faked |
+| **Web apps** | Explores screens, fills forms, clicks, reloads, reads saved state | Screenshots, visible messages, HTTP statuses, console and runtime errors, layout measurements |
+| **APIs** | Calls endpoints, then reads back to confirm the write | Exact status and JSON, request and response |
+| **CLIs and scripts** | Runs representative commands | Exit code, stdout/stderr, generated files (a stale file can't pass) |
+| **Libraries** | Calls public functions with representative inputs | Return values or the expected error, async included |
+| **Desktop and mobile** | Only through a real driver your host provides | Otherwise **unsupported**, never faked |
 
-The helper runs Node projects directly. Other languages (Python, Go, Rust…) are checked through your agent's terminal and your project's own tests.
+The helper runs Node projects directly. Python, Go, Rust and the rest go through your agent's terminal and your own test suite.
 
-## 🧾 What a finding looks like
-
-*From the seeded profile demo:*
+## A finding
 
 ```text
 ✗ CONFIRMED DEFECT · Profile change is lost after saving
@@ -177,99 +117,79 @@ The helper runs Node projects directly. Other languages (Python, Go, Rust…) ar
 Coverage: 4 checks · 2 failed (UI + API, grouped as 1 defect) · 2 passed (422 + 403 rejections)
 ```
 
-Facts are kept separate from suspected causes. When there is no requirement or contract to check against, the finding is marked **needs review** and not reported as a bug. A visual difference, a 4xx response or a successful exit code is not, by itself, a pass or a defect.
+Facts stay separate from suspected causes. A visual difference, a 4xx response or exit code 0 is, on its own, neither a pass nor a defect.
 
-## ✅ Proving a fix, not just a pass
-
-A test that passes after a "fix" proves little if it never failed. TRACE enforces the before-and-after:
-
-1. Before any edit, the expected outcomes are **frozen** and SHA-256 hashed. If they change, the run is refused.
-2. The first run is the **baseline**. It must actually reproduce the problem.
-3. After the fix, the **same scenario** runs again, along with regression checks.
+## Proving a fix
 
 | Result | Meaning |
 | --- | --- |
-| 🟥 `reproduced` / `confirmed defect` | The baseline shows the bug |
-| 🟩 `verified fix` | The baseline failed and the same checks now pass |
-| 🟨 `could not reproduce` | It passes, but it never failed, so it is **not** counted as a fix |
-| 🟥 `still failing` | The fix didn't work |
-| 🟪 `regression` | It passed before and fails now |
-| ⬜ `blocked` · `unsupported` · `needs review` | It couldn't run, there is no integration, or there is no clear expectation |
+| `reproduced` | The baseline shows the bug |
+| `verified fix` | The baseline failed, and the same frozen checks now pass |
+| `could not reproduce` | It passes, but it never failed. **Not** a fix. |
+| `still failing` | The fix didn't work |
+| `regression` | It passed before and fails now |
+| `blocked` · `unsupported` · `needs review` | Couldn't run, no integration, or no clear expectation |
 
-Every verify run keeps a screenshot, so you get **before/after evidence**. Failed checks show what was actually observed. Each result also records **how many runs** it took and **how long** it was from the failing baseline to the verified fix.
+Changed criteria are refused. Every verify run keeps a screenshot for before and after, and failed checks record what was actually seen. Each result also counts the runs and the time from the failing baseline to the verified fix: measured numbers, not promises.
 
-## 🛠️ How it works
+## Automatic checks
 
-```mermaid
-flowchart LR
-    A["/trace"] --> B[Read request, diff,<br/>docs & tests]
-    B --> C[Pick ≤ 6 scenarios<br/>with a known source]
-    C --> D[Exercise with<br/>host tools / helper]
-    D --> E[Compact findings<br/>+ evidence]
-    E --> F{Fix allowed?}
-    F -- yes --> G[Freeze checks →<br/>agent fixes]
-    G --> H[Same checks +<br/>regressions]
-    F -- no --> I[Report coverage<br/>& gaps]
-    H --> I
-```
+At the end of a task that changed code, TRACE checks that change once before the agent hands back. It never runs mid-task, never asks twice in a row, and stays silent when nothing changed.
 
-## 🔐 Safe by default
-
-- **Asks before risky actions.** "Check my project" never covers payments, outside messages, destructive commands or production changes.
-- **Local only.** The helper drives a fresh browser that talks only to your local app. Requests to other sites, WebSockets and service workers are blocked.
-- **Private data stays private.** Password, token, email and card fields are masked in screenshots. Secrets are removed from text. Headers, cookies, storage and request bodies are never kept.
-- **Your files are safe.** Evidence lives outside your project. The installer never overwrites anything, and symlinked paths are refused.
-- **No telemetry, no uploads, no model calls** from TRACE itself.
-
-Details: [Privacy & permissions](docs/PRIVACY.md) · [Security policy](SECURITY.md)
-
-## ❓ FAQ
-
-<details>
-<summary><b>Does it replace my coding agent?</b></summary>
-<br/>No. TRACE is a skill that runs inside the agent you already use. It does the checking. Your agent still does the fixing.
-</details>
-
-<details>
-<summary><b>Do I need an API key, a cloud account or a browser download?</b></summary>
-<br/>No. The skill uses the tools your agent already has. Only the optional helper needs Playwright's Chromium, and only for its own browser checks.
-</details>
-
-<details>
-<summary><b>Does it save tokens or time?</b></summary>
-<br/>We don't claim that yet. TRACE records real numbers per fix (runs, time from failure to verified fix) so you can judge for yourself. Running checks costs tool calls too.
-</details>
-
-<details>
-<summary><b>Can it break my data?</b></summary>
-<br/>Read-only checks are the default. Anything that writes data needs an explicit local-test-data permission and should use synthetic data. Project code that TRACE runs is <b>not</b> sandboxed, so only check trusted projects.
-</details>
-
-<details>
-<summary><b>If TRACE passes, is my app bug-free?</b></summary>
-<br/>No, and TRACE never says so. It reports exactly what it covered, what passed, and what stayed untested.
-</details>
-
-<details>
-<summary><b>Why "experimental"?</b></summary>
-<br/>The core flows are tested locally on Windows with Claude Code and Codex. CI is set up for Windows and Ubuntu, macOS is not tested yet, and desktop/mobile drivers are not supported. See the <a href="docs/VALIDATION.md">validation ledger</a>.
-</details>
-
-## 📚 Documentation
-
-| Guide | What's inside |
+| | |
 | --- | --- |
-| [Helper CLI](docs/CLI.md) | Optional local helper: setup and every command |
-| [Architecture](docs/ARCHITECTURE.md) | How the skill, installer and helper fit together |
-| [Demo](docs/DEMO.md) | The seeded "save that didn't save" walkthrough |
-| [Privacy & permissions](docs/PRIVACY.md) | What is collected, masked, stored and never touched |
+| **Claude Code** | On with the plugin. Turn it off in `/config` → TRACE → *Automatic checks* |
+| **Codex** | Runs once you trust the hook in `/hooks` |
+| **One project off** | `{"autoCheck": false}` in that project's `.trace.json` |
+| **Everywhere off** | `TRACE_AUTO_CHECK=0` |
+
+## Safe by default
+
+- **Asks first.** "Check my project" never covers payments, outside messages, destructive commands or production.
+- **Local only.** The helper's browser talks only to your local app. Other sites, WebSockets and service workers are blocked.
+- **Private stays private.** Password, token, email and card fields are masked in screenshots. Secrets are removed from text. Cookies, headers, storage and request bodies are never kept.
+- **Your files are safe.** Evidence lives outside your project. The installer never overwrites anything.
+- **Nothing leaves your machine** because of TRACE: no telemetry, no uploads, no model calls.
+
+More in [PRIVACY](docs/PRIVACY.md) and [SECURITY](SECURITY.md).
+
+## FAQ
+
+**Does it replace my coding agent?**
+No. It runs inside the agent you already use. TRACE does the checking, and your agent does the fixing.
+
+**Do I need an API key or a browser download?**
+No. The skill uses your agent's existing tools. Only the optional helper needs Playwright's Chromium, and only for its own browser checks.
+
+**Does it save tokens?**
+We don't claim that. TRACE records runs and time-to-verified-fix per bug, so you can see for yourself. Checking costs tool calls too.
+
+**Can it break my data?**
+Read-only checks are the default. Writing test data takes an explicit permission and should use synthetic data. Project code that TRACE runs is **not** sandboxed, so only check code you trust.
+
+**If TRACE passes, is my app bug-free?**
+No, and TRACE never says so. It reports exactly what it covered, what passed, and what stayed untested.
+
+**Why "experimental"?**
+The core flows are tested on Windows with Claude Code and Codex, and CI runs Windows and Ubuntu. macOS and desktop/mobile drivers aren't covered yet. See the [validation ledger](docs/VALIDATION.md) and the [roadmap](ROADMAP.md).
+
+## Documentation
+
+| | |
+| --- | --- |
+| [INSTALL](INSTALL.md) | Every way to install, the local helper, updating and removing |
+| [Demo](docs/DEMO.md) | The save that didn't save, caught and verified |
+| [Helper CLI](docs/CLI.md) | Commands, statuses, exit codes, permission flags |
+| [Architecture](docs/ARCHITECTURE.md) | How the skill, plugins, hook and helper fit together |
+| [Privacy](docs/PRIVACY.md) | What is collected, masked, stored and never touched |
 | [Validation](docs/VALIDATION.md) | What has been tested, and what hasn't |
 | [Design decisions](docs/RESEARCH.md) | Why TRACE is built this way |
+| [Roadmap](ROADMAP.md) | What's next |
 
-## 🤝 Contributing
+## Contributing
 
-Bug reports, new integrations and doc fixes are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md). Report vulnerabilities privately; see [SECURITY.md](SECURITY.md). Release notes are in the [changelog](CHANGELOG.md).
+Bug reports, wrong findings and new integrations are welcome. Read [CONTRIBUTING](CONTRIBUTING.md) first, and report vulnerabilities privately ([SECURITY](SECURITY.md)). Release notes are in the [CHANGELOG](CHANGELOG.md).
 
-## 📄 License
+## License
 
-[MIT](LICENSE). *TRACE is an experimental project; the name is provisional.*
+[MIT](LICENSE). Check it, fork it, ship it.

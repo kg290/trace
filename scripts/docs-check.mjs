@@ -10,7 +10,7 @@ async function collect(name) {
   if (stat.isDirectory()) for (const entry of await fs.readdir(name)) await collect(path.join(name, entry));
   else if (stat.isFile() && name.endsWith('.md')) documents.push(name);
 }
-for (const name of ['README.md', 'CONTRIBUTING.md', 'SECURITY.md', 'CHANGELOG.md', 'docs', 'skills', 'examples', '.github']) await collect(name);
+for (const name of ['README.md', 'INSTALL.md', 'ROADMAP.md', 'CONTRIBUTING.md', 'SECURITY.md', 'CHANGELOG.md', 'docs', 'skills', 'examples', '.github']) await collect(name);
 let links = 0;
 for (const name of documents) {
   const text = await fs.readFile(name, 'utf8');

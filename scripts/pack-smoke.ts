@@ -18,11 +18,11 @@ async function command(args: string[], expectedCode = 0) {
   assert.equal(result.code, expectedCode, result.stderr + result.stdout); return result.stdout;
 }
 await command([npm, 'run', 'build']);
-// The offline install below needs the cache that npm ci filled: npm's own cache unless npm_config_cache overrides it.
+// Reuse the cache npm ci filled (npm's own, unless npm_config_cache overrides it); packuments still revalidate online.
 const cache = path.resolve(process.env.npm_config_cache || (await command([npm, 'config', 'get', 'cache'])).trim());
 const packed = JSON.parse(await command([npm, 'pack', '--ignore-scripts', '--json', '--pack-destination', root]))[0];
 const tarball = path.join(root, packed.filename);
-await command([npm, 'install', '--prefix', installation, tarball, '--omit=dev', '--ignore-scripts', '--offline', '--no-audit', '--no-fund', '--cache', cache]);
+await command([npm, 'install', '--prefix', installation, tarball, '--omit=dev', '--ignore-scripts', '--no-audit', '--no-fund', '--cache', cache]);
 const packageRoot = path.join(installation, 'node_modules/trace-local-experiment'), cli = path.join(packageRoot, 'dist/cli.js');
 await fs.cp('examples/number-kit', project, { recursive: true });
 const common = ['--project', project, '--store', store];
@@ -57,9 +57,9 @@ try {
   await command([cli, 'delete', capture.id, ...common]); await assert.rejects(fs.stat(path.join(store, capture.id)));
   await command([cli, 'uninstall-skill', ...common]); await assert.rejects(fs.stat(skill));
   await command([cli, 'uninstall-skill', ...common, '--agent', 'claude']); await assert.rejects(fs.stat(claudeSkill));
-  await command([npm, 'uninstall', '--prefix', installation, 'trace-local-experiment', '--ignore-scripts', '--offline', '--no-audit', '--cache', cache]);
+  await command([npm, 'uninstall', '--prefix', installation, 'trace-local-experiment', '--ignore-scripts', '--no-audit', '--cache', cache]);
   await assert.rejects(fs.stat(cli)); assert.match(await fs.readFile(path.join(project, 'README.md'), 'utf8'), /Number Kit/);
-  const report = { at: new Date().toISOString(), status: 'passed', elapsedMs: performance.now() - started, tarball, packageBytes: packed.size, unpackedBytes: packed.unpackedSize, packageFiles: packed.entryCount, checks: ['offline clean runtime-only install', 'Codex and Claude skill/runtime paths', 'packed screenshot/action capture', 'approved incident', 'frozen behavior verification', 'packed library probe', 'revocation/deletion', 'both skill removals and package uninstall preserve project files'], limits: ['Windows and pinned Chromium only.', 'Host invocation is qualified separately.', 'Package is local and private; no registry publication.'] };
+  const report = { at: new Date().toISOString(), status: 'passed', elapsedMs: performance.now() - started, tarball, packageBytes: packed.size, unpackedBytes: packed.unpackedSize, packageFiles: packed.entryCount, checks: ['clean runtime-only install, cache first', 'Codex and Claude skill/runtime paths', 'packed screenshot/action capture', 'approved incident', 'frozen behavior verification', 'packed library probe', 'revocation/deletion', 'both skill removals and package uninstall preserve project files'], limits: ['Windows and pinned Chromium only.', 'Host invocation is qualified separately.', 'Package is local and private; no registry publication.'] };
   await fs.mkdir('.test-output/evidence', { recursive: true });
   await fs.writeFile('.test-output/evidence/pack-smoke.json', JSON.stringify(report, null, 2) + '\n'); console.log(JSON.stringify(report, null, 2));
 } finally { await app.close(); await fs.rm(root, { recursive: true, force: true, maxRetries: 5 }); }

@@ -1,18 +1,18 @@
 <img src="../../assets/logo.svg" width="48" align="right" alt="TRACE logo"/>
 
-# 🔢 Number Kit (demo fixture)
+# Number Kit (demo fixture)
 
 [← README](../../README.md) · [Check format](../../skills/trace/references/checks.md)
 
 A tiny Node library and CLI for testing TRACE's nonvisual checks.
 
-## 📜 Contract
+## Contract
 
 `total(values)` returns the numeric sum, including zero and negative numbers.
 
 The Node CLI prints the sum followed by a newline. Invalid numeric arguments print `Use finite numbers.` to stderr and exit 2.
 
-## ▶️ Try it
+## Try it
 
 ```sh
 node cli.mjs 0 -5 2

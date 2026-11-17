@@ -2,7 +2,7 @@
 
 <img src="../assets/logo.svg" width="72" alt="TRACE logo"/>
 
-# 🎬 The save that didn't save
+# The save that didn't save
 
 **A seeded bug, caught, fixed and verified, using real screenshots.**
 
@@ -53,7 +53,7 @@ The checks were frozen before the fix. Their SHA-256 never changed:
 
 ## Run it yourself
 
-After the [development setup](../CONTRIBUTING.md#-setup):
+After the [development setup](../CONTRIBUTING.md#setup):
 
 ```sh
 npm run demo:proof -- capture   # broken app: reproduce and freeze the checks

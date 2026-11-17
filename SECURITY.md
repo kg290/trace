@@ -1,6 +1,6 @@
 <img src="assets/logo.svg" width="48" align="right" alt="TRACE logo"/>
 
-# 🔐 Security policy
+# Security policy
 
 [← README](README.md) · [Privacy & permissions](docs/PRIVACY.md)
 
@@ -13,7 +13,7 @@
 
 TRACE is experimental. Fixes land on the current source. There is no long-term support branch and no guaranteed response time.
 
-## 🚨 Reporting a vulnerability
+## Reporting a vulnerability
 
 **Please do not open a public issue for security problems.**
 

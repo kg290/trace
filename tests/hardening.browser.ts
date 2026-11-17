@@ -67,11 +67,18 @@ test('runtime observation leaves errors/rejections/getters alone; screenshots ma
     await page.getByRole('button', { name: 'Run runtime cases' }).click(); await expect.poll(() => errors).toBe(2);
     assert.equal(await page.evaluate(() => (window as any).getterCount), 0);
     await capture.mark(true); await page.locator('#private').evaluate(e => { e.textContent = 'another-private-value'; }); await capture.mark(true);
-    const different = await page.evaluate(async ([a, b]) => {
+    // Only the private element's area (plus a margin) must be identical; Linux font antialiasing elsewhere may differ by a pixel.
+    const box = (await page.locator('#private').boundingBox())!;
+    const different = await page.evaluate(async ([a, b, box]) => {
       const arrays = [];
-      for (const data of [a, b]) { const bitmap = await createImageBitmap(await (await fetch('data:image/png;base64,' + data)).blob()); const canvas = document.createElement('canvas'); canvas.width = bitmap.width; canvas.height = bitmap.height; const context = canvas.getContext('2d')!; context.drawImage(bitmap, 0, 0); arrays.push(context.getImageData(0, 0, bitmap.width, bitmap.height).data); }
-      const differences = []; for (let i = 0; i < arrays[0].length; i++) if (arrays[0][i] !== arrays[1][i] && differences.length < 20) differences.push({ x: Math.floor(i / 4) % 1000, y: Math.floor(i / 4000), a: arrays[0][i], b: arrays[1][i] }); return differences;
-    }, [capture.images.get('image-1.png')!.toString('base64'), capture.images.get('image-2.png')!.toString('base64')]);
+      for (const data of [a, b] as string[]) { const bitmap = await createImageBitmap(await (await fetch('data:image/png;base64,' + data)).blob()); const canvas = document.createElement('canvas'); canvas.width = bitmap.width; canvas.height = bitmap.height; const context = canvas.getContext('2d')!; context.drawImage(bitmap, 0, 0); arrays.push(context.getImageData(0, 0, bitmap.width, bitmap.height).data); }
+      const { x: bx, y: by, width, height } = box as { x: number; y: number; width: number; height: number }, margin = 4;
+      const differences = []; for (let i = 0; i < arrays[0].length; i++) {
+        const x = Math.floor(i / 4) % 1000, y = Math.floor(i / 4000);
+        if (x >= bx - margin && x <= bx + width + margin && y >= by - margin && y <= by + height + margin && arrays[0][i] !== arrays[1][i] && differences.length < 20) differences.push({ x, y, a: arrays[0][i], b: arrays[1][i] });
+      }
+      return differences;
+    }, [capture.images.get('image-1.png')!.toString('base64'), capture.images.get('image-2.png')!.toString('base64'), box] as const);
     assert.deepEqual(different, [], 'Private pixels should be masked consistently');
     await page.getByRole('button', { name: 'Unsupported controls' }).click(); await expect(page.locator('iframe')).toHaveCount(1);
     await capture.mark(true);
