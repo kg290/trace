@@ -20,18 +20,18 @@
 </p>
 
 <p align="center">
-  <img src="assets/hero.png" width="880" alt="Three real screenshots. 1: the agent's change shows Saved, but the server answered PATCH 422. 2: TRACE reloads and the old name Alex Rivera is back, so the change was lost. 3: after the fix, the same frozen checks pass, including the 422 and 403 rejections. Baseline reproduced, 2 of 4 checks failed; after the fix, verified, 4 of 4 passed; criteria hash unchanged.">
+  <img src="assets/trace-feature-overview.png" width="960" alt="Still broken? Another screenshot? TRACE records what should work, tries the software, captures evidence, and repeats the same check after your agent fixes it.">
 </p>
 
 <p align="center">
   <strong>Stop being the tester for code your AI wrote.</strong><br>
   TRACE runs the software, shows you the evidence, and proves the fix with the same checks that failed.<br>
-  <sub>A plugin for Claude Code and Codex. No API keys, no telemetry. Real screenshots from the <a href="docs/DEMO.md">seeded demo</a>.</sub>
+  <sub>A plugin for Claude Code and Codex. No API keys, no telemetry. See the <a href="docs/DEMO.md">demo with real screenshots</a>.</sub>
 </p>
 
 <p align="center">
   <a href="#install">Install</a> &middot;
-  <a href="#how-it-works">How it works</a> &middot;
+  <a href="#features">Features</a> &middot;
   <a href="#what-it-checks">What it checks</a> &middot;
   <a href="#proving-a-fix">Proving a fix</a> &middot;
   <a href="#faq">FAQ</a> &middot;
@@ -64,7 +64,7 @@ codex plugin marketplace add kg290/trace
 codex plugin add trace@trace
 ```
 
-Then open `/hooks` in Codex, trust TRACE's Stop hook, and start a new thread.
+Then open `/hooks` in Codex, review and trust TRACE's prompt and Stop hooks, and start a new thread.
 
 **Any other agent**, or a single project without a plugin: `node install.mjs --project <path>` from a clone. Step by step, including the optional local helper: **[INSTALL.md](INSTALL.md)**.
 
@@ -81,13 +81,23 @@ Only install TRACE from [`kg290/trace`](https://github.com/kg290/trace) on GitHu
 
 The plugin skill lives under its plugin's name: **`/trace:trace`** in Claude Code (typing `/trace` finds it) and **`$trace:trace`** in Codex (or pick TRACE under `@`). A check-only request reports findings and changes no code. If the task includes fixing, your agent fixes and TRACE proves it.
 
-## How it works
+## Features
 
-1. **Scope.** It reads your request, the recent diff, the README, manifests, existing tests and documented examples. Uncommitted work is left alone.
-2. **Choose.** It picks at most six scenarios: the normal path, an edge or error case, the parts the change touches, and regressions. Every expectation needs a source. A guess becomes **needs review**, never a bug.
-3. **Run.** It uses your agent's own browser, terminal and test tools first. An optional local helper adds exact, repeatable browser, HTTP, CLI and library checks.
-4. **Report.** Each finding gives what was checked, what was expected (and from where), what actually happened, how to reproduce it, and the evidence. Duplicates are grouped and ranked by impact.
-5. **Prove.** Before a fix, the checks are frozen and hashed. Afterwards, the same scenario runs again, with regression checks around it.
+| Feature | What TRACE does |
+| --- | --- |
+| Check on demand | Ask it to check the project, a recent change, one feature, or a proposed fix. You can start before you know where a bug is. |
+| Choose relevant scenarios | Uses your request, recent edits, docs, examples and tests to choose up to six checks, including ordinary use, edge cases, errors and interactions between changed parts. |
+| Freeze what success means | Before an implementation or fix, the agent records one to six expectations tied to your words and how to test each one. A fingerprint lets it check the original criteria at the end. A revised request gets a separate record. |
+| Run the software | Uses the agent's browser, terminal and existing tests first. The optional helper can exercise local web apps, HTTP APIs, Node commands and Node libraries. |
+| Check what actually happened | Reloads a page, reads back a value, or inspects a generated file to see whether the outcome matches the requirement. |
+| Capture evidence automatically | Collects useful screenshots for interfaces and relevant responses, errors, outputs or files for other checks. You can report a problem without recording your screen or gathering logs. |
+| Give your agent a reproducible finding | Shows the steps, expected result, observed result and evidence. Groups duplicates, ranks findings by impact and identifies source locations when established. |
+| Verify a fix | Repeats the original failing scenario after the edit and checks related behavior for regressions. Only a failure followed by a pass on the same check counts as a verified fix. |
+| Check at task boundaries | With the hooks enabled, TRACE can check a completed code change before the agent hands it back. You can turn this off per project. |
+| Report coverage and limits | Lists what passed, failed, was blocked or went untested. Unclear expectations are marked for review. The helper also records run counts and elapsed time to a verified fix. |
+| Control your evidence | The helper stores evidence locally outside the checked project. You can inspect its timeline, export selected evidence, revoke access or delete an incident. Production changes and destructive actions require separate authorization. |
+
+The prompt hook guides the agent to freeze criteria before editing. If TRACE cannot establish that timing, it reports the uncertainty. See the [validation record](docs/VALIDATION.md).
 
 ## What it checks
 
@@ -134,7 +144,7 @@ Changed criteria are refused. Every verify run keeps a screenshot for before and
 
 ## Automatic checks
 
-At the end of a task that changed code, TRACE checks that change once before the agent hands back. It never runs mid-task, never asks twice in a row, and stays silent when nothing changed.
+The prompt hook asks the agent to record expectations when a coding task begins. The Stop hook requests one check of the completed change before handoff and stays silent when nothing changed.
 
 | | |
 | --- | --- |
